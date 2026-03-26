@@ -1,10 +1,13 @@
 const axios = require('axios');
-const path = require('path');
-const ytdl = require('youtube-dl-exec').create(path.join(__dirname, 'yt-dlp.exe'));
+const ytdl = require('youtube-dl-exec');
 
-const apikey = "AIzaSyBNvlPSlZNCQP7cTI0lnfoGUsLzCPAWEDA";
+const apikey = process.env.YOUTUBE_API_KEY;
 
 const getVideoDetails = async (ytid) => {
+    if (!apikey) {
+        throw new Error('YOUTUBE_API_KEY is not set');
+    }
+
 	let url = 'https://www.googleapis.com/youtube/v3/videos';
 	url += '?part=snippet'; // レスポンスに含める情報を指定
 	url += '&id=' + ytid; // 取得する動画IDを指定
@@ -13,9 +16,15 @@ const getVideoDetails = async (ytid) => {
 
 	try {
 		const response = await axios.get(url);
-		return response.data.items[0];
+        const firstItem = response?.data?.items?.[0];
+        if (!firstItem) {
+            throw new Error('Video details not found');
+        }
+
+        return firstItem;
 	} catch (error) {
 		console.error('Error fetching video details:', error);
+        throw error;
 	}
 }
 

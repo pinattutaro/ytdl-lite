@@ -7,7 +7,8 @@
     "downloads"
   ],
   "host_permissions": [
-    "http://192.168.1.2:9600/*",
+    "https://*.vercel.app/*",
+    "http://localhost:9600/*",
     "https://www.youtube.com/*"
   ],
   "background": {

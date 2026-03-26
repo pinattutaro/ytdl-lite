@@ -1,8 +1,8 @@
 const express = require('express');
 const app = express();
 
-const PORT = 9600;
-const HOST = "192.168.1.2";
+const PORT = Number(process.env.PORT || 9600);
+const HOST = process.env.HOST || '0.0.0.0';
 
 const { getStream } = require('./service');
 
@@ -23,7 +23,3 @@ app.get("/ytdl/:id", async (req, res) => {
 app.listen(PORT, HOST, () => {
     console.log(`Server is running at http://${HOST}:${PORT}`);
 });
-
-getStream("GjC4SznBD_A")
-    .then(info => console.log("Stream info:", info))
-    .catch(err => console.error("Error:", err));

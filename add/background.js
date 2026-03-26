@@ -1,4 +1,5 @@
-const API_BASE_URL = "http://192.168.1.2:9600";
+// Replace this with your deployed Vercel URL.
+const API_BASE_URL = "https://your-vercel-project.vercel.app";
 
 function sanitizeFileName(name) {
 	return String(name || "video")
