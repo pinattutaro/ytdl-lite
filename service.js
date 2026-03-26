@@ -70,27 +70,43 @@ const pickBestMuxedFormat = (formats) => {
 const getStreamUrlByYtDlp = async (vid) => {
     const watchUrl = `https://www.youtube.com/watch?v=${vid}`;
     const binPath = resolveYtDlpBinaryPath();
-    const args = [
-        '--ignore-config',
-        '--extractor-args',
-        'youtube:player_client=android_vr,android,ios',
-        '--dump-single-json',
-        '--no-warnings',
-        '--no-playlist',
-        watchUrl
+    const argSets = [
+        ['--extractor-args', 'youtube:player_client=android_vr,android,ios'],
+        ['--extractor-args', 'youtube:player_client=android,ios,web'],
+        ['--extractor-args', 'youtube:player_client=ios,web'],
+        []
     ];
 
-    const { stdout } = await execFileAsync(binPath, args, {
-        maxBuffer: 10 * 1024 * 1024
-    });
+    let lastError = null;
+    for (const extractorArgs of argSets) {
+        const args = [
+            '--ignore-config',
+            ...extractorArgs,
+            '--dump-single-json',
+            '--no-warnings',
+            '--no-playlist',
+            watchUrl
+        ];
 
-    const parsed = JSON.parse(stdout);
-    const best = pickBestMuxedFormat(parsed.formats);
-    if (!best || !best.url) {
-        throw new Error('No suitable format found');
+        try {
+            const { stdout } = await execFileAsync(binPath, args, {
+                maxBuffer: 10 * 1024 * 1024
+            });
+
+            const parsed = JSON.parse(stdout);
+            const best = pickBestMuxedFormat(parsed.formats);
+            if (!best || !best.url) {
+                throw new Error('No suitable format found');
+            }
+
+            return best.url;
+        } catch (error) {
+            lastError = error;
+            console.warn('yt-dlp attempt failed:', extractorArgs.join(' ') || '(default)');
+        }
     }
 
-    return best.url;
+    throw lastError || new Error('Failed to fetch stream URL by yt-dlp');
 };
 
 const getStream = async (vid) => {
