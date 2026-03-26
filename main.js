@@ -1,8 +1,11 @@
 const express = require('express');
 const app = express();
 
-const PORT = Number(process.env.PORT || 9600);
-const HOST = process.env.HOST || '0.0.0.0';
+// const PORT = Number(process.env.PORT || 9600);
+// const HOST = process.env.HOST || '0.0.0.0';
+
+const PORT = 9600;
+const HOST = "192.168.1.2";
 
 const { getStream } = require('./service');
 

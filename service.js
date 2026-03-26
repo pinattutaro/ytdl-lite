@@ -1,11 +1,25 @@
 const axios = require('axios');
 const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
+const fs = require('node:fs');
+const path = require('node:path');
 const ytDlpPath = require('yt-dlp-static');
 
 const execFileAsync = promisify(execFile);
 
 const apikey = process.env.YOUTUBE_API_KEY;
+
+const resolveYtDlpBinaryPath = () => {
+    const candidates = [
+        process.env.YT_DLP_PATH,
+        path.join(__dirname, 'bin', 'yt-dlp'),
+        path.join(__dirname, 'yt-dlp.exe'),
+        ytDlpPath
+    ].filter(Boolean);
+
+    const found = candidates.find((candidate) => fs.existsSync(candidate));
+    return found || ytDlpPath;
+};
 
 const getVideoDetails = async (ytid) => {
     if (!apikey) {
@@ -52,14 +66,16 @@ const pickBestMuxedFormat = (formats) => {
 
 const getStreamUrlByYtDlp = async (vid) => {
     const watchUrl = `https://www.youtube.com/watch?v=${vid}`;
+    const binPath = resolveYtDlpBinaryPath();
     const args = [
+        '--ignore-config',
         '--dump-single-json',
         '--no-warnings',
         '--no-playlist',
         watchUrl
     ];
 
-    const { stdout } = await execFileAsync(ytDlpPath, args, {
+    const { stdout } = await execFileAsync(binPath, args, {
         maxBuffer: 10 * 1024 * 1024
     });
 
