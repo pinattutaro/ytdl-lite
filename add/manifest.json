@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "YTdl Lite",
+  "version": "1.0.0",
+  "description": "Request stream info from local server and download YouTube video.",
+  "permissions": [
+    "downloads"
+  ],
+  "host_permissions": [
+    "http://192.168.1.2:9600/*",
+    "https://www.youtube.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Download current YouTube video"
+  }
+}
