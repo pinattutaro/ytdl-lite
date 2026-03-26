@@ -58,7 +58,8 @@ const getStream = async (vid) => {
         return {
             title: 'Error',
             thumbnail: '',
-            url: ''
+            url: '',
+            error: String(err && err.message ? err.message : err)
         };
     }
 }

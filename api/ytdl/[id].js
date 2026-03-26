@@ -14,6 +14,15 @@ module.exports = async (req, res) => {
     try {
         const streamInfo = await getStream(id);
 
+        if (!streamInfo.url) {
+            return res.status(500).json({
+                ...streamInfo,
+                videoStream: '',
+                tittle: streamInfo.title || '',
+                error: streamInfo.error || 'Failed to fetch stream info'
+            });
+        }
+
         return res.status(200).json({
             ...streamInfo,
             videoStream: streamInfo.url || '',
