@@ -1,5 +1,5 @@
 const axios = require('axios');
-const ytdl = require('youtube-dl-exec');
+const ytdl = require('@distube/ytdl-core');
 
 const apikey = process.env.YOUTUBE_API_KEY;
 
@@ -34,15 +34,13 @@ const getStream = async (vid) => {
         const snippet = info.snippet;
         console.log("Getting stream URL for:", snippet.title);
 
-        const formats = await ytdl(`https://www.youtube.com/watch?v=${vid}`, {
-            dumpJson: true,
+        const videoInfo = await ytdl.getInfo(`https://www.youtube.com/watch?v=${vid}`);
+        const videoFormat = ytdl.chooseFormat(videoInfo.formats, {
+            quality: 'highest',
+            filter: 'audioandvideo'
         });
 
-        const videoFormat = formats.formats
-            .filter(f => f.vcodec && f.acodec) // ビデオとオーディオ両方
-            .sort((a, b) => b.height - a.height)[0];
-
-        if (!videoFormat) {
+        if (!videoFormat || !videoFormat.url) {
             throw new Error("No suitable format found");
         }
 
