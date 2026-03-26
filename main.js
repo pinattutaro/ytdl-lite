@@ -1,13 +1,14 @@
 const express = require('express');
 const app = express();
 
-// const PORT = Number(process.env.PORT || 9600);
-// const HOST = process.env.HOST || '0.0.0.0';
-
-const PORT = 9600;
-const HOST = "192.168.1.2";
+const PORT = Number(process.env.PORT || 9600);
+const HOST = process.env.HOST || '0.0.0.0';
 
 const { getStream } = require('./service');
+
+app.get('/', (_req, res) => {
+    res.status(200).send('ok');
+});
 
 app.get("/ytdl/:id", async (req, res) => {
     const id = req.params.id;

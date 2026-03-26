@@ -3,7 +3,6 @@ const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
 const fs = require('node:fs');
 const path = require('node:path');
-const ytDlpPath = require('yt-dlp-static');
 
 const execFileAsync = promisify(execFile);
 
@@ -13,12 +12,16 @@ const resolveYtDlpBinaryPath = () => {
     const candidates = [
         process.env.YT_DLP_PATH,
         path.join(__dirname, 'bin', 'yt-dlp'),
-        path.join(__dirname, 'yt-dlp.exe'),
-        ytDlpPath
+        path.join(__dirname, 'yt-dlp.exe')
     ].filter(Boolean);
 
     const found = candidates.find((candidate) => fs.existsSync(candidate));
-    return found || ytDlpPath;
+
+    if (!found) {
+        throw new Error('yt-dlp binary not found');
+    }
+
+    return found;
 };
 
 const getVideoDetails = async (ytid) => {
@@ -69,6 +72,8 @@ const getStreamUrlByYtDlp = async (vid) => {
     const binPath = resolveYtDlpBinaryPath();
     const args = [
         '--ignore-config',
+        '--extractor-args',
+        'youtube:player_client=android_vr,android,ios',
         '--dump-single-json',
         '--no-warnings',
         '--no-playlist',

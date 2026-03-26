@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: ytdl-lite
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: YOUTUBE_API_KEY
+        sync: false
+      - key: YT_DLP_PATH
+        value: /opt/render/project/src/bin/yt-dlp
