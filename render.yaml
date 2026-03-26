@@ -11,3 +11,5 @@ services:
         sync: false
       - key: YT_DLP_PATH
         value: /opt/render/project/src/bin/yt-dlp
+      - key: YTDLP_GEO_BYPASS_COUNTRY
+        value: JP

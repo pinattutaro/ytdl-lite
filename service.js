@@ -7,6 +7,7 @@ const path = require('node:path');
 const execFileAsync = promisify(execFile);
 
 const apikey = process.env.YOUTUBE_API_KEY;
+const ytdlpGeoBypassCountry = process.env.YTDLP_GEO_BYPASS_COUNTRY || 'JP';
 
 const resolveYtDlpBinaryPath = () => {
     const candidates = [
@@ -81,6 +82,11 @@ const getStreamUrlByYtDlp = async (vid) => {
     for (const extractorArgs of argSets) {
         const args = [
             '--ignore-config',
+            '--js-runtimes',
+            'node',
+            '--geo-bypass',
+            '--geo-bypass-country',
+            ytdlpGeoBypassCountry,
             ...extractorArgs,
             '--dump-single-json',
             '--no-warnings',
